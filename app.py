@@ -48,18 +48,28 @@ class Post(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    title = db.Column(db.String(64))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 
-#forms
+# forms
+
 class NameForm(FlaskForm):
     name = StringField('What is your name?', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
+
 class PostForm(Form):
     body = TextAreaField("What's on your mind?", validators=[Required()])
     submit = SubmitField('Submit')
+
+
+class WriteForm(Form):
+    title = StringField("제목", validators=[DataRequired()])
+    author = StringField("작성자", validators=[DataRequired()])
+    body = TextAreaField("내용", validators=[DataRequired()])
+    submit = SubmitField('게시')
+    cancel = SubmitField('취소')
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -87,8 +97,21 @@ def board_page():
         post = Post(body=form.body.data, author=current_user._get.current_object())
         db.session.add(post)
         return redirect(url_for('board_page'))
-    posts = Post.query.order_by(Post.timestamp.desc()).all()
+    posts = Post.query.order_by(Post.id).all()
     return render_template('board_page.html', form=form, posts=posts)
+
+
+@app.route('/writing_page', methods=['GET', 'POST'])
+def writing_page():
+    form = WriteForm()
+    if form.validate_on_submit():
+        if form.cancel.data:
+            return (redirect(url_for('board_page')))
+        else:
+            post = Post(title=form.title.data, body=form.body.data, author=form.author.data)
+            db.session.add(post)
+            return redirect(url_for('board_page'))
+    return render_template('writing_page.html', form=form, name=session.get('name'))
 
 
 
@@ -97,7 +120,7 @@ def user(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
         abort(404)
-    posts = user.posts.order_by(Post.timestamp.desc()).all()
+    posts = user.posts.order_by(Post.id).all()
     return render_template('user.html', user=user, posts=posts)
 
 @app.route('/post/<int:id>')

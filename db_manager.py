@@ -12,21 +12,25 @@ if __name__ == '__main__':
     user_david = User(username='david', role=user_role)
 
     db.session.add_all([admin_role, mod_role, user_role, user_john, user_susan, user_david])
-    print(admin_role.id)
-    db.session.commit()
-    print(admin_role.id)
+    # print(admin_role.id)
+    # db.session.commit()
+    # print(admin_role.id)
 
     admin_role.name = 'Adminstrator'
     db.session.add(admin_role)
-    db.session.commit()
+    # db.session.commit()
 
-    db.session.delete(mod_role)
-    db.session.commit()
+    # db.session.delete(mod_role)
+    # db.session.commit()
 
-    bp_ex1 = Post(body='example 1', author_id=user_john.id)
-    bp_ex2 = Post(body='example 2', author_id=user_david.id)
-    bp_ex3 = Post(body='example 3', author_id=user_susan.id)
-    db.session.add_all(bp_ex1, bp_ex2, bp_ex3)
+    # joined = User.query.join(Role\
+    #                          .add_columns(User.id, User.username, User.role_id, Role.name)\
+    #                          .filter(User.role))
+
+    bp_ex1 = Post(body='example 1', title="example 1", user_id=user_john.id)
+    bp_ex2 = Post(body='example 2', title="example 2", user_id=user_david.id)
+    bp_ex3 = Post(body='example 3', title="example 3",  user_id=user_susan.id)
+    db.session.add_all([bp_ex1, bp_ex2, bp_ex3])
     db.session.commit()
 
 
