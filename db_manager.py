@@ -1,6 +1,6 @@
 # NARVAEZ BETZABETH 2018106117
 
-from app import db, Role, User
+from app import db, Role, User, Post
 
 if __name__ == '__main__':
     db.create_all()
@@ -23,15 +23,22 @@ if __name__ == '__main__':
     db.session.delete(mod_role)
     db.session.commit()
 
-    print(Role.query.all())
-    print(User.query.all())
-    print(User.query.filter_by(role=user_role).all())
-    print(str(User.query.filter_by(role=user_role)))
+    bp_ex1 = Post(body='example 1', author_id=user_john.id)
+    bp_ex2 = Post(body='example 2', author_id=user_david.id)
+    bp_ex3 = Post(body='example 3', author_id=user_susan.id)
+    db.session.add_all(bp_ex1, bp_ex2, bp_ex3)
+    db.session.commit()
 
-    user_role = Role.query.filter_by(name='User').first()
-    print(user_role)
-    users = user_role.users
-    print(users)
-    print(users[0].role)
-    print(user_role.users.order_by(User.username).all())
-    print(user_role.users.count())
+
+    # print(Role.query.all())
+    # print(User.query.all())
+    # print(User.query.filter_by(role=user_role).all())
+    # print(str(User.query.filter_by(role=user_role)))
+    #
+    # user_role = Role.query.filter_by(name='User').first()
+    # print(user_role)
+    # users = user_role.users
+    # print(users)
+    # print(users[0].role)
+    # print(user_role.users.order_by(User.username).all())
+    # print(user_role.users.count())
